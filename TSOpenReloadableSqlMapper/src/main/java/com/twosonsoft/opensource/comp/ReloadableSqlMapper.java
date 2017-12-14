@@ -1,7 +1,10 @@
 package com.twosonsoft.opensource.comp;
 // SqlSesssionFactoryBean을 상속 받는다
-//스프링 컨텍스를 접근하기 위해 ApplicationContextAware을 구현한다
-//객체 생성 완료후 객체 프로퍼티의 설정값을 가져 오도록 한다 => BeanPostProcessor 구현
+// 스프링 컨텍스를 접근하기 위해 ApplicationContextAware을 구현한다
+// 객체 생성 완료후 객체 프로퍼티의 설정값을 가져 오도록 한다
+// xml이 존재하는 루트 디렉토리를 감시하는 Thread를 만들고 실행한다
+// 객체소멸 시점시 디렉토리 감시 Thread를 종료하기 위해 DisposableBean 을 구현한다
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,9 +63,10 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 	@Override
 	public void nofitfyPathChange(String mapperPath, String targetFilename)
 	{
-		logger.info("Detect " + targetFilename + " changed");
+		logger.info(targetFilename + " 변화 감지");
 		try
 		{
+			logger.info("SqlMapper 재설정");
 			refresh();
 		}
 		catch (Exception e)
@@ -78,7 +82,7 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 		isAlive = false;
 		if (pathWatcher != null)
 		{
-			logger.debug("Closing watcher");
+			logger.info("디렉토리 감시 쓰레드 종료");
 			pathWatcher.closeWatcher();
 		}		
 	}
@@ -103,12 +107,12 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 		{
 			if (pathWatcher != null)
 			{
-				logger.info("Already watching directory");
+				logger.info("디렉토리 감시 쓰레드가 이미 실행중입니다");
 				return;
 			}
 			else
 			{
-				logger.info("Start watching directory");
+				logger.info("디렉토리 감시 쓰레드 실행 시작");
 			}
 			mapperRootPath = getSuffixAutomaton(mapperLocations);
 			if (mapperRootPath != null && !mapperRootPath.equals(""))
@@ -157,7 +161,7 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 			// get parent directory
 			commonStr = file.getParent();
 		}
-		logger.info("SqlSession common mapper root path = " + commonStr);
+		logger.info("SqlSession xml 맵퍼 루트 디렉토리  = " + commonStr);
 		return commonStr;
 	}
 	public void extractProperty()
@@ -166,8 +170,6 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 		{
 			return;
 		}
-		logger.debug("extractProperty... try to get mapperLocations property value");
-		
 		// 어플리케이션 컨텍스트로 부터 현재 빈을 세팅하기 위해 사용된 프로퍼티의 값을 가져와 저장한다
 		BeanDefinition beanDefinition = listableBeanFactory.getBeanDefinition(beanName);
 		MutablePropertyValues values = beanDefinition.getPropertyValues();
