@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<!-- 검사 URL -->
+	<http>
+		<intercept-url pattern="/admin/**" access="hasRole('KING')" />
+		<form-login />
+		<logout />
+	</http>
+
+	<!-- provider -->
+	<authentication-manager>
+		<authentication-provider>
+			<user-service>
+				<user name="member" password="password" authorities="ROLE_MEMBER" />
+				<user name="user" password="password" authorities="ROLE_USER" />
+				<user name="king" password="password" authorities="ROLE_KING" />
+				<user name="guest" password="password" authorities="ROLE_GUEST" />
+			</user-service>
+		</authentication-provider>
+	</authentication-manager>
+	<beans:bean id="accessDecisionManager"
+		class="org.springframework.security.access.vote.AffirmativeBased">
+		<beans:constructor-arg>
+			<beans:list>
+				<beans:ref bean="roleVoter" />
+			</beans:list>
+		</beans:constructor-arg>
+	</beans:bean>
+	<beans:bean id="roleVoter"
+		class="org.springframework.security.access.vote.RoleHierarchyVoter">
+		<beans:constructor-arg>
+			<beans:bean
+				class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+				<beans:property name="hierarchy">
+					<beans:value>
+						ROLE_KING > ROLE_ADMIN
+						ROLE_ADMIN > ROLE_USER
+						ROLE_USER > ROLE_GUEST
+					</beans:value>
+				</beans:property>
+			</beans:bean>
+		</beans:constructor-arg>
+	</beans:bean>
+</beans:beans>

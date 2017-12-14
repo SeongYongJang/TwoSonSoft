@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 스프링 시큐리티 1. 사용자 정의 -> 로그인 화면 만들기 1) login view page 만들기 2. 사용자 정의 -> 
+	사용자 권한 예외 처리 만들기 사용자 데이터 (ID, Password, Role) => 데이터 베이스 처리 테스트 -->
+
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	
+	<global-method-security pre-post-annotations="enabled" secured-annotations="enabled"/>
+	<!-- 검사 URL -->
+	<http>
+		<csrf disabled="true" />
+		<intercept-url pattern="/admin/**" access="hasRole('ADMIN')" />
+		<!-- <intercept-url pattern="/secured/**" access="hasRole('ADMIN')" /> -->
+		<form-login login-page="/member/login.do"
+			login-processing-url="/member/loginProcess.do" 
+			username-parameter = "id"
+			password-parameter = "pw"
+			default-target-url="/member/loginSuccess.do" />
+		<logout logout-url="/j_spring_security_logout.do" logout-success-url="/home.do"/>
+		<access-denied-handler error-page="/member/access_denied.do" />
+	</http>
+
+	<!-- provider -->
+	<authentication-manager>
+		<authentication-provider ref="dbAuthProvider" />		<!-- 사용자 정의 인증 프로세서를 정의한다 -->
+	</authentication-manager>
+
+<!-- 	<beans:bean id="dbAuthProvider" class="com.twosonsoft.pilot.member.DBAuthProvider" /> -->
+	
+	<beans:bean id="accessDecisionManager"
+		class="org.springframework.security.access.vote.AffirmativeBased">
+		<beans:constructor-arg>
+			<beans:list>
+				<beans:ref bean="roleVoter" />
+			</beans:list>
+		</beans:constructor-arg>
+	</beans:bean>
+	<beans:bean id="roleVoter"
+		class="org.springframework.security.access.vote.RoleHierarchyVoter">
+		<beans:constructor-arg>
+			<beans:bean
+				class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+				<beans:property name="hierarchy">
+					<beans:value>
+						ROLE_KING > ROLE_ADMIN
+						ROLE_ADMIN > ROLE_USER
+						ROLE_USER
+						> ROLE_GUEST
+					</beans:value>
+				</beans:property>
+			</beans:bean>
+		</beans:constructor-arg>
+	</beans:bean>
+</beans:beans>
