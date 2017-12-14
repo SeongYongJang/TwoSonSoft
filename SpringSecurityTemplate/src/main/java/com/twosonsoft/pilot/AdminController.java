@@ -12,6 +12,6 @@ public class AdminController
 	@RequestMapping("/hello.do")
 	public @ResponseBody String hello()
 	{
-		return "Just hello - but have ADMIN role";
+		return "Just hello - but must have ADMIN role";
 	}
 }
