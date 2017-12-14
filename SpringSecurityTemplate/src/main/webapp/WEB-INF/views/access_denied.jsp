@@ -25,7 +25,7 @@
 
 		<li><a href="#none">${id} 회원</a></li>
 		<li><a href="j_spring_security_logout.do">로그아웃</a></li>
-		<li><a href="./main.do">홈</a></li>
+		<li><a href="../home.do">홈</a></li>
 	</sec:authorize>
 
 </body>
