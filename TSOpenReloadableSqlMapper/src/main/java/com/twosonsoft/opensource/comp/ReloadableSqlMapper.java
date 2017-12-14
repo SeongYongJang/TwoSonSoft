@@ -9,6 +9,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.slf4j.Logger;
@@ -52,6 +54,13 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 	public void setBeanName(String beanName)
 	{
 		this.beanName = beanName;
+	}
+
+	
+	@Override
+	public void setDataSource(DataSource dataSource)
+	{
+		super.setDataSource(dataSource);
 	}
 
 	@Override
