@@ -1,0 +1,48 @@
+2018-01-03 15:27:29,159 DEBUG Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+2018-01-03 15:27:29,178 DEBUG Property `configuration` or 'configLocation' not specified, using default MyBatis Configuration
+2018-01-03 15:27:29,353 DEBUG Parsed mapper file: 'class path resource [sqlMapper/mssql/sample.xml]'
+2018-01-03 15:27:29,470 INFO  Using default implementation for ThreadExecutor
+2018-01-03 15:27:29,487 INFO  Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-01-03 15:27:29,488 INFO  Quartz Scheduler v.2.2.1 created.
+2018-01-03 15:27:29,490 INFO  RAMJobStore initialized.
+2018-01-03 15:27:29,492 INFO  Scheduler meta-data: Quartz Scheduler (v2.2.1) 'org.springframework.scheduling.quartz.SchedulerFactoryBean#0' with instanceId 'NON_CLUSTERED'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
+
+2018-01-03 15:27:29,496 INFO  Quartz scheduler 'org.springframework.scheduling.quartz.SchedulerFactoryBean#0' initialized from an externally provided properties instance.
+2018-01-03 15:27:29,497 INFO  Quartz scheduler version: 2.2.1
+2018-01-03 15:27:29,498 INFO  JobFactory set to: org.springframework.scheduling.quartz.AdaptableJobFactory@1e1a0406
+2018-01-03 15:27:29,504 INFO  Starting beans in phase 2147483647
+2018-01-03 15:27:29,505 INFO  Starting Quartz Scheduler now
+2018-01-03 15:27:29,511 DEBUG batch acquisition of 1 triggers
+2018-01-03 15:27:29,512 INFO  Scheduler org.springframework.scheduling.quartz.SchedulerFactoryBean#0_$_NON_CLUSTERED started.
+2018-01-03 15:27:30,011 DEBUG batch acquisition of 0 triggers
+2018-01-03 15:27:30,012 DEBUG Calling execute on job DEFAULT.jobDetailFactoryBean
+2018-01-03 15:27:30,016 DEBUG batch acquisition of 1 triggers
+2018-01-03 15:27:30,489 DEBUG Checking for available updated version of Quartz...
+2018-01-03 15:27:30,748 DEBUG Quartz version update check failed: Server returned HTTP response code: 403 for URL: http://www.terracotta.org/kit/reflector?kitID=quartz&pageID=update.properties&id=-1062731669&os-name=Mac+OS+X&jvm-name=Java+HotSpot%28TM%29+64-Bit+Server+VM&jvm-version=1.8.0_144&platform=x86_64&tc-version=2.2.1&tc-product=Quartz&source=Quartz&uptime-secs=1&patch=UNKNOWN
+2018-01-03 15:27:40,006 DEBUG batch acquisition of 0 triggers
+2018-01-03 15:27:40,006 DEBUG Calling execute on job DEFAULT.jobDetailFactoryBean
+2018-01-03 15:27:40,008 DEBUG batch acquisition of 1 triggers
+2018-01-03 15:27:50,005 DEBUG batch acquisition of 0 triggers
+2018-01-03 15:27:50,006 DEBUG Calling execute on job DEFAULT.jobDetailFactoryBean
+2018-01-03 15:27:50,007 DEBUG batch acquisition of 1 triggers
+2018-01-03 15:28:00,004 DEBUG batch acquisition of 0 triggers
+2018-01-03 15:28:00,004 DEBUG Calling execute on job DEFAULT.jobDetailFactoryBean
+2018-01-03 15:28:00,007 DEBUG batch acquisition of 1 triggers
+2018-01-03 15:28:10,003 DEBUG batch acquisition of 0 triggers
+2018-01-03 15:28:10,003 DEBUG Calling execute on job DEFAULT.jobDetailFactoryBean
+2018-01-03 15:28:10,005 DEBUG batch acquisition of 1 triggers
+2018-01-03 15:28:20,002 DEBUG batch acquisition of 0 triggers
+2018-01-03 15:28:20,002 DEBUG Calling execute on job DEFAULT.jobDetailFactoryBean
+2018-01-03 15:28:20,003 DEBUG batch acquisition of 1 triggers
+2018-01-03 15:28:30,004 DEBUG batch acquisition of 0 triggers
+2018-01-03 15:28:30,004 DEBUG Calling execute on job DEFAULT.jobDetailFactoryBean
+2018-01-03 15:28:30,005 DEBUG batch acquisition of 1 triggers
+2018-01-03 15:28:40,005 DEBUG batch acquisition of 0 triggers
+2018-01-03 15:28:40,005 DEBUG Calling execute on job DEFAULT.jobDetailFactoryBean
+2018-01-03 15:28:40,007 DEBUG batch acquisition of 1 triggers

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="mlohbs" default="jar2">
+
+	<!-- define properties -->
+	<property name="dir.source" value="./src" />
+	<property name="dir.jar" value="./lib" />
+	
+	<property name="dir.build" value="./deploy" />
+	<property name="dir.lib" value="./deploy/lib" />
+	<property name="dir.build.root" value="./deploy" />
+	<property name="dir.build.runtimeEnv" value="./deploy/runtimeEnv" />
+	<property name="dir.build.sqlMapper" value="./deploy/sqlMapper" />
+	
+	<property name="dir.runtimeEnv" value="./src/runtimeEnv" />
+	<property name="dir.sqlMapper" value="./src/sqlMapper" />
+	
+	<property name="app.jarName" value="Batch.jar" />
+	
+	
+	
+	<path id="path.library"> 
+		<fileset dir="${dir.jar}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<!-- 이전 폴더들 지우기 -->
+	<target name="clean">
+		<echo>Cleanning build/deploy folder</echo>
+		<delete dir="${dir.build.root}" />
+	</target>
+
+	<!-- 필요한 폴더들 생성하기 -->
+	<target name="init" depends="clean">
+
+		<echo>Make build folder</echo>
+		<mkdir dir="${dir.build}" />
+		<mkdir dir="${dir.build.runtimeEnv}" />
+		<mkdir dir="${dir.build.sqlMapper}" />
+		
+	</target>
+
+	<!-- 프로젝트 컴파일 및 리소스 파일 카피 -->
+	<target name="compile" depends="init">
+		<echo>Compile source files</echo>
+		<javac srcdir="${dir.source}" destdir="${dir.build}" includeantruntime="false" encoding="utf-8">
+			<classpath refid="path.library" />
+		</javac>	
+		<copy todir="${dir.build}">
+			<fileset dir="${dir.source}" includes="**/*.xml"/>
+		</copy>			
+		<copy todir="${dir.lib}">
+			<fileset dir="${dir.jar}" includes="**/*"/>
+		</copy>			
+		<copy todir="${dir.build.runtimeEnv}">
+			<fileset dir="${dir.runtimeEnv}" includes="**/*"/>
+		</copy>
+
+		<copy todir="${dir.build.sqlMapper}">
+			<fileset dir="${dir.sqlMapper}" includes="**/*"/>
+		</copy>
+	</target>
+	<target name="create_manifest" depends="compile">
+       <manifest file="${dir.source}/MANIFEST.MF">
+           <attribute name="Built-By" value="lohbs"/>
+           
+       </manifest>
+   </target>
+   	
+	<target name="jar" depends="compile">
+		<echo>Make jar File</echo>
+		<jar destfile="${dir.build.root}/${app.jarName}">
+		 <fileset dir="${dir.build.root}" includes = "**"/>
+        </jar>
+	</target>
+	<target depends="create_manifest" name="jar2"> <!-- Runnable JAR 파일을 만들기 위한 target -->
+		<path id="path.library.deploy">
+			<fileset dir="${dir.lib}">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+
+		<pathconvert property="list-of-jarfiles" pathsep=" " dirsep="/" refid="path.library.deploy">
+<!-- 			<mapper type="flatten"/>
+			<map from="${dir.lib}" to="." /> -->
+			<chainedmapper>
+			<flattenmapper/>
+			<globmapper from="*" to="./lib/*"/>
+			</chainedmapper>
+			
+		</pathconvert>
+		
+		<echo>${list-of-jarfiles}</echo>
+			
+        <jar destfile="${dir.build.root}/${app.jarName}" basedir="${dir.build.root}" includes="**/**">
+            <manifest> 
+            		<!-- 실행시킬 main method 가 있는 클래스의 경로를 적어준다. -->
+                <attribute name="Main-Class" value="com.twosonsoft.pilot.BatchMainApplication"/> 
+				<attribute name="Class-Path" value="./lib/${list-of-jarfiles}"/>               
+            </manifest>
+        </jar>
+	</target>
+	
+
+</project>

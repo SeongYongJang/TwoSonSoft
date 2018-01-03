@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	 xmlns:aop="http://www.springframework.org/schema/aop" 
+	 xmlns:tx="http://www.springframework.org/schema/tx"
+	 xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	<!-- <annotation-driven /> -->
+	<aop:aspectj-autoproxy />
+	<context:annotation-config />
+	<beans:bean id="propertyHolder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<beans:property name="locations">
+			<beans:list>
+				<beans:value>classpath:/runtimeEnv/DBMS/${jdbc.dbms}/jdbcConnection_${spring.profiles.active}.properties</beans:value>
+				<beans:value>classpath:/runtimeEnv/Application/appconfig_${spring.profiles.active}.properties</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean> 
+	<!-- Log4J Configuration -->
+	<beans:bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+	    <beans:property name="targetClass" value="org.springframework.util.Log4jConfigurer" />
+	    <beans:property name="targetMethod" value="initLogging" />
+	    <beans:property name="arguments">
+	        <beans:list>
+	            <beans:value>classpath:log4j_${spring.profiles.active}.xml</beans:value>
+	        </beans:list>
+	    </beans:property>
+	</beans:bean>		
+	<!-- include 데이터 베이스 설정 -->
+	<beans:import resource="DBConnection.xml" />
+	
+	<context:component-scan base-package="com.twosonsoft.pilot"/>
+
+	
+	<!-- Define Quartz Batch -->
+	
+	<beans:bean id="taskTemplate" class="com.twosonsoft.pilot.batch.TaskTemplate">
+		<beans:property name="name" value="배치 프로세스 - Sample"/>
+	</beans:bean>
+	
+	<beans:bean id="jobDetailFactoryBean"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<beans:property name="targetObject" ref="taskTemplate" />
+		<beans:property name="targetMethod" value="act" />
+		<beans:property name="concurrent" value="false" />
+	</beans:bean>	
+	<!-- Define Trigger -->
+	<beans:bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+   		<beans:property name="jobDetail" ref="jobDetailFactoryBean" />
+   		<!-- 매 10초마다 실행 -->
+   		<beans:property name="cronExpression" value="*/10 * * * * ?" />
+	</beans:bean>
+	<!-- Define Job List -->
+	<beans:bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	    <beans:property name="triggers">
+	        <beans:list>
+	            <beans:ref bean="cronTrigger"/>
+	        </beans:list>
+	    </beans:property>
+	</beans:bean>
+</beans:beans>

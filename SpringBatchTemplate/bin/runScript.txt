@@ -1,0 +1,1 @@
+java -jar -Dspring.profiles.active=local -Dfile.encoding=utf-8 -Djdbc.dbms=mssql Batch.jar 
