@@ -11,9 +11,8 @@
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 	
-	<!-- <annotation-driven /> -->
-	<aop:aspectj-autoproxy />
 	<context:annotation-config />
+	
 	<beans:bean id="propertyHolder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<beans:property name="locations">
 			<beans:list>
@@ -34,7 +33,42 @@
 	</beans:bean>		
 	<!-- include 데이터 베이스 설정 -->
 	<beans:import resource="DBConnection.xml" />
+	<!-- ////////////////////////////////////////////////////////////////////// -->
+    	<beans:bean id="transactionManager1"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<beans:property name="dataSource" ref="dataSource" />
+	</beans:bean>
+	<!-- Create Working DAO -->
+	<beans:bean id="daoMemberInfo_DataSourceTransaction" class="com.twosonsoft.pilot.dao.DaoMemberInfo">
+		<beans:property name="sqlSession" ref = "sqlSession" />
+	</beans:bean>
+	<beans:bean id="daoTemp_DataSourceTransaction" class="com.twosonsoft.pilot.dao.DaoTemp">
+		<beans:property name="sqlSession" ref = "sqlSession" />
+	</beans:bean>
+	<!-- //////////////////////////////////////////////////////// -->
+	<!-- 트랜잭션 설정 -->
+	<!-- //////////////////////////////////////////////////////// -->
+	<!-- @Transactional 을 이용한 세팅 -->
+	<tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager1"/>
 	
+	<!-- AOP advice 를 이용한 세팅 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager1">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="insert*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="RuntimeException"/>
+			<tx:method name="update*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="RuntimeException"/>
+			<tx:method name="delete*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="RuntimeException"/>
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="txAdvicePointCut" expression="execution(* com.twosonsoft..dao..*.*(..))" />
+		<aop:advisor id="transactionAdvisor" pointcut-ref="txAdvicePointCut" advice-ref="txAdvice"/>
+	
+	</aop:config>
+	<!-- //////////////////////////////////////////////////////// -->	
+		
 	<context:component-scan base-package="com.twosonsoft.pilot"/>
 
 	

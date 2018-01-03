@@ -1,15 +1,20 @@
 package com.twosonsoft.pilot.batch;
 
-import org.apache.ibatis.session.SqlSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
+import com.twosonsoft.pilot.dao.DaoMemberInfo;
+import com.twosonsoft.pilot.dao.DaoTemp;
+import com.twosonsoft.pilot.dto.BeanTemp;
 
 // Must be Spring Bean - Declare it in app-context.xml
 public class TaskTemplate
 {
-	// autowire sqlSession
-	@Autowired
-	SqlSession sqlSession;
+	// inject DAO object
+	@Resource(name = "daoMemberInfo_DataSourceTransaction")
+	DaoMemberInfo daoMemberInfo_DataSourceTransaction;
 	
+	@Resource(name = "daoTemp_DataSourceTransaction")
+	DaoTemp daoTemp_DataSourceTransaction;
 	
 	String name;
 
@@ -27,6 +32,14 @@ public class TaskTemplate
 	public void act()
 	{
 		// 
+		BeanTemp temp = new BeanTemp();
+		temp.setF1("111");
+		temp.setF2("222");
+		temp.setF3("333");
+
+		// Test Transaction propagation
+		daoTemp_DataSourceTransaction.insertTempRuntimeException(temp);
+		
 	}
 	
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="ApiTemp">
+	<insert id="insertTemp" parameterType="com.twosonsoft.pilot.dto.BeanTemp">
+		insert into MemberInfo.Temp (f1, f2, f3) value (#{f1}, #{f2}, #{f3})
+		
+	</insert>
+</mapper>  
