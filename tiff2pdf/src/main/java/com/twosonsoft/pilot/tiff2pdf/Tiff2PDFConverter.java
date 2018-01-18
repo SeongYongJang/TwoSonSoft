@@ -28,7 +28,6 @@ public class Tiff2PDFConverter
 			fis = new FileInputStream(tiffFilename);
 			// 파일의 내용을 문자로 읽기 위해서 InputStreamReader 로 생성
 			isr = new InputStreamReader(fis);
-			// Data의 표시 대상 지정 System.out 에 문자를 출력한다.
 			char[] header = new char[2];
 			isr.read(header, 0, 2);
 
