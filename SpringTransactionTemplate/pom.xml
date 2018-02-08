@@ -187,9 +187,9 @@
 		<!-- AOP -->
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-aop -->
 		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-aop</artifactId>
-		    <version>${org.springframework-version}</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${org.springframework-version}</version>
 		</dependency>
 
 		<dependency>
@@ -216,8 +216,6 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.39</version>
 		</dependency>
-
-		
 	</dependencies>
 	<build>
 		<plugins>

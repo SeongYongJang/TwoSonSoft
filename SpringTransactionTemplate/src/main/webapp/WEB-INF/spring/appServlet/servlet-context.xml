@@ -50,16 +50,6 @@
 		<beans:property name="prefix" value="/WEB-INF/views/" />
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
-	<!-- Default DBMS Settings -->
-	<beans:bean id="propertyHolder"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<beans:property name="locations">
-			<beans:list>
-				<beans:value>classpath:/runtimeEnv/jdbcConnection.properties
-				</beans:value>
-			</beans:list>
-		</beans:property>
-	</beans:bean>
 
 	<!--데이터 베이스 설정 -->
 	<!-- /////////////////////////////////////////////////////////////////////// -->
@@ -107,5 +97,14 @@
 	<context:component-scan base-package="com.twosonsoft.pilot" />
 	
 	
+	<beans:beans profile="local">
+		<context:property-placeholder location="/WEB-INF/spring/property/local/*.properties" />
+	</beans:beans>
+	<beans:beans profile="dev">
+		<context:property-placeholder location="/WEB-INF/spring/property/dev/*.properties" />
+	</beans:beans>
+	<beans:beans profile="stg">
+		<context:property-placeholder location="/WEB-INF/spring/property/stg/*.properties" />
+	</beans:beans> 
 	
 </beans:beans>
