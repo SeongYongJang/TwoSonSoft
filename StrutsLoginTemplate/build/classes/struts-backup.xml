@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<constant name="struts.devMode" value="true" />
+<!-- 	<constant name="struts.convention.default.parent.package" value="default"/>
+ -->
+	<package name="default" extends="struts-default" >
+ 		 <interceptors>
+ 		 <interceptor name="loginCheck"
+			class="com.twosonsoft.pilot.interceptor.LoginSessionCheckInterceptor" />
+       		<interceptor-stack name="myStack">
+          		<interceptor-ref name="loginCheck"/>
+<!--           		<interceptor-ref name="timer"/>
+          		<interceptor-ref name="logger"/>
+        			<interceptor-ref name="default-stack"/> -->
+       		</interceptor-stack>
+  		</interceptors>
+		 <default-interceptor-ref name="myStack"/>
+
+		<action name="login" class="com.twosonsoft.pilot.action.LoginAction"
+			method="login">
+			<result name="success">
+				/index.jsp
+			</result>
+			
+		</action>
+	</package>
+
+<!-- 	<package name="default" extends="struts-default">
+	<interceptors>
+		<interceptor name="loginCheck"
+			class="com.twosonsoft.pilot.interceptor.LoginSessionCheckInterceptor" />
+		<interceptor-stack name="commonStack">
+			<interceptor-ref name="loginCheck">
+				<param name="excludeActions">login, isLogin, logout</param>
+			</interceptor-ref>
+		</interceptor-stack>
+	</interceptors>
+
+		<default-interceptor-ref name="commonStack" />
+
+	</package> -->
+
+	<!-- <package name="basicstruts2" extends="struts-default"> <action name="index"> 
+		<result>/index.jsp</result> </action> </package> -->
+	<!-- Define Login Package -->
+	<package name="login" namespace="/" extends="struts-default">
+		<!-- Login : parameters => id, token, uuid, save parameters to session -->
+		<action name="login" class="com.twosonsoft.pilot.action.LoginAction"
+			method="login">
+			<result name="success">
+				/index.jsp
+			</result>
+		</action>
+		<!-- Check Login or not, return login session information as json string -->
+		<action name="isLogin" class="com.twosonsoft.pilot.action.LoginAction"
+			method="isLogin">
+		</action>
+		<!-- logout : clear session information -->
+		<action name="logout" class="com.twosonsoft.pilot.action.LoginAction"
+			method="logout">
+
+		</action>
+	</package>
+	<!-- User must be login to access biz logics -->
+	<package name="biz" namespace="/" extends="struts-default">
+		<action name="getBizData" class="com.twosonsoft.pilot.action.BizAction"
+			method="getBizData">
+		</action>
+		 
+	</package>
+
+
+
+</struts>
