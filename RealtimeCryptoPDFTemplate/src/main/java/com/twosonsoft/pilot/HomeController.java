@@ -98,7 +98,7 @@ public class HomeController
 
 	String getDecryptedFilename()
 	{
-		String filename = "/Users/seongyong/Downloads/2_seed_dec.pdf";
+		String filename = "2_seed_dec.pdf";
 		return filename;
 	}
 
