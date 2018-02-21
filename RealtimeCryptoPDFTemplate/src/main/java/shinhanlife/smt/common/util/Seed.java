@@ -1,8 +1,7 @@
-package com.twosonsoft.pilot.crypto;
+package shinhanlife.smt.common.util;
 
 import java.io.UnsupportedEncodingException;
 
-import org.bouncycastle.util.encoders.Base64;
 
 
 /**
@@ -440,7 +439,7 @@ public class Seed
 	{
 		if (inData.equals(""))
 			return "";
-		return new String(Base64.encode(encrypt(inData.getBytes(s_charset), s_key.getBytes())));
+		return Base64.encode(encrypt(inData.getBytes(s_charset), s_key.getBytes()));
 	}
 
 	public String decryptToString(String encryptString) throws UnsupportedEncodingException

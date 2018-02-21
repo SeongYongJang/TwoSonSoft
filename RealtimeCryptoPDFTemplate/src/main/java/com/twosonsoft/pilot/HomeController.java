@@ -14,7 +14,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.twosonsoft.pilot.crypto.CryptoUtils;
+import shinhanlife.smt.common.util.CryptoUtils;
 
 /**
  * Handles requests for the application home page.

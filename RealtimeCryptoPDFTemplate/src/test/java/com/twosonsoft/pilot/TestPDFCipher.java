@@ -1,9 +1,8 @@
 package com.twosonsoft.pilot;
 
-import org.bouncycastle.crypto.CryptoException;
 import org.junit.Test;
 
-import com.twosonsoft.pilot.crypto.CryptoUtils;
+import shinhanlife.smt.common.util.CryptoUtils;
 
 public class TestPDFCipher
 {
@@ -28,7 +27,7 @@ public class TestPDFCipher
 			byte[] decryptBytes = cryptoUtils.decryptFileBySeed(key, encryptedFilename);
 			cryptoUtils.saveFile(decryptedFilename, decryptBytes);
 		}
-		catch (CryptoException ex)
+		catch (Exception ex)
 		{
 			System.out.println(ex.getMessage());
 			ex.printStackTrace();
