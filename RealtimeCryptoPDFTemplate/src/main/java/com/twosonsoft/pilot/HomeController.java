@@ -69,7 +69,7 @@ public class HomeController
 		String key = getCryptoKey();
 
 		// 암호화된 파일을 열어 복호화된 바이트를 얻는다
-		byte[] decryptytes = cryptoUtils.decryptFileBySeed(key, EXTERNAL_FILE_PATH);
+		byte[] decryptBytes = cryptoUtils.decryptFileBySeed(key, EXTERNAL_FILE_PATH);
 
 		///////////////////////////////////////////////////////////////////////////////////
 		// 웹브라우져로 다운로드를 수행하기 위한 준비 작업을 한다
@@ -83,10 +83,10 @@ public class HomeController
 		response.setHeader("Content-Disposition", String.format("inline; filename=\"" + downloadFilename + "\""));
 		response.setHeader("Cache-Control", "max-age=3600");
 
-		response.setContentLength((int) decryptytes.length);
+		response.setContentLength((int) decryptBytes.length);
 
 		// 파일을 전송한다
-		FileCopyUtils.copy(decryptytes, response.getOutputStream());
+		FileCopyUtils.copy(decryptBytes, response.getOutputStream());
 	}
 
 	String getEncryptedFilename()
