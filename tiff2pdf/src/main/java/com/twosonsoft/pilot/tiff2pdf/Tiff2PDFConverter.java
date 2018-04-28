@@ -1,9 +1,16 @@
 package com.twosonsoft.pilot.tiff2pdf;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.util.Iterator;
 import java.util.List;
+
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.Image;
@@ -100,22 +107,51 @@ public class Tiff2PDFConverter
 	{
 		RandomAccessFileOrArray file = new RandomAccessFileOrArray(tiffFilename);
 		int pages = TiffImage.getNumberOfPages(file);
-		for (int page = 1; page <= pages; page++)
+		
+		Iterator<ImageReader> readers = javax.imageio.ImageIO.getImageReadersBySuffix("tiff");
+
+		ImageReader _imageReader = (ImageReader) (readers.next());
+		if (_imageReader != null)
 		{
-			Image img = TiffImage.getTiffImage(file, page);
-			float w = img.getWidth();
-			float h = img.getHeight();
-			// convert horizontal image to vertical
-			if (w > h)
+			File orgFile = new File(tiffFilename);
+
+			ImageInputStream iis = javax.imageio.ImageIO.createImageInputStream(orgFile);
+			_imageReader.setInput(iis, true);
+
+			for (int page = 0; page < pages; page++)
 			{
-				img.setRotationDegrees(90);
+				// change tiff to jpeg
+				BufferedImage bufferedImage = _imageReader.read(page);
+				BufferedImage img2 = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+				// Set the RGB values for converted image (jpg)
+				for (int y = 0; y < bufferedImage.getHeight(); y++)
+				{
+					for (int x = 0; x < bufferedImage.getWidth(); x++)
+					{
+						img2.setRGB(x, y, bufferedImage.getRGB(x, y));
+					}
+				}
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				javax.imageio.ImageIO.write(img2, "jpg", baos);
+				baos.flush();
+				// Convert byteArrayoutputSteam to ByteArray
+				byte[] imageInByte = baos.toByteArray();
+
+				Image imgToSave = Image.getInstance(imageInByte);
+				float w = imgToSave.getWidth();
+				float h = imgToSave.getHeight();
+				// convert horizontal image to vertical
+				if (w > h)
+				{
+					imgToSave.setRotationDegrees(90);
+				}
+
+				imgToSave.scaleToFit(PageSize.A4.getWidth(), PageSize.A4.getHeight());
+				pdf.add(imgToSave);
+				baos.close();
 			}
 
-			img.scaleToFit(PageSize.A4.getWidth(), PageSize.A4.getHeight());
-
-			pdf.add(img);
 		}
-
 	}
 
 }
