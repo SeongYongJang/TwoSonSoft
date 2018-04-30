@@ -18,7 +18,13 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="src/main/java/lib/itext-2.1.7.jar"/>
+	<classpathentry kind="lib" path="src/main/java/lib/itext-2.1.7.jar" sourcepath="/Users/seongyong/.m2/repository/com/lowagie/itext/2.1.7/itext-2.1.7-sources.jar"/>
 	<classpathentry kind="lib" path="src/main/java/lib/junit-3.8.1.jar"/>
+	<classpathentry kind="lib" path="src/main/java/lib/common-image-3.3.2.jar"/>
+	<classpathentry kind="lib" path="src/main/java/lib/common-io-3.3.2.jar"/>
+	<classpathentry kind="lib" path="src/main/java/lib/common-lang-3.3.2.jar"/>
+	<classpathentry kind="lib" path="src/main/java/lib/imageio-core-3.3.2.jar"/>
+	<classpathentry kind="lib" path="src/main/java/lib/imageio-metadata-3.3.2.jar"/>
+	<classpathentry kind="lib" path="src/main/java/lib/imageio-tiff-3.3.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

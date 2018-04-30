@@ -1,5 +1,7 @@
 package com.twosonsoft.pilot.tiff2pdf;
 
+import javax.imageio.ImageIO;
+
 import org.junit.Test;
 
 public class TiffTest
@@ -9,7 +11,7 @@ public class TiffTest
 	{
 		Tiff2PDFConverter converter = new Tiff2PDFConverter();
 		
-		String tiffFilename = "/Users/seongyong/Downloads/tiffsample";
+		String tiffFilename = "/Users/seongyong/Downloads/k1.tif";
 		
 		if(converter.isTiffFile(tiffFilename))
 		{
@@ -19,8 +21,8 @@ public class TiffTest
 	@Test
 	public void testTiff2Pdf() throws Exception
 	{
-		String tiffFilename = "/Users/seongyong/Downloads/multi.tif";
-		String pdfFilename = "/Users/seongyong/Downloads/covertedPdf6.pdf";
+		String tiffFilename = "/Users/seongyong/Downloads/k3.tif";
+		String pdfFilename = "/Users/seongyong/Downloads/covertedPdf7.pdf";
 		
 		Tiff2PDFConverter converter = new Tiff2PDFConverter();
 		converter.convertTiff2Pdf(tiffFilename, pdfFilename);
