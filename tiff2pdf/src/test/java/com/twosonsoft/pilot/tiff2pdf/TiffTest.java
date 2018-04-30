@@ -26,4 +26,14 @@ public class TiffTest
 		converter.convertTiff2Pdf(tiffFilename, pdfFilename);
 		
 	}
+	@Test
+	public void testImageIO()
+	{
+		String[] readers = ImageIO.getReaderFileSuffixes();
+		for(String reader : readers)
+		{
+			System.out.println(reader);
+		}
+	}
+
 }
