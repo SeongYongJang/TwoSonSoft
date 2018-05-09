@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
@@ -16,8 +17,6 @@ import com.lowagie.text.Document;
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.RandomAccessFileOrArray;
-import com.lowagie.text.pdf.codec.TiffImage;
 
 public class Tiff2PDFConverter
 {
@@ -77,7 +76,7 @@ public class Tiff2PDFConverter
 		// open pdf document
 		pdf.open();
 		// add tiff file to pdf document
-		addTiffImageToPdf(pdf, tiffFilename);
+		addTiffImageToPdf_iCafe(pdf, tiffFilename);
 		// close pdf document
 		pdf.close();
 
@@ -96,62 +95,57 @@ public class Tiff2PDFConverter
 		for (String tiffFilename : files)
 		{
 			// add tiff file to pdf document
-			addTiffImageToPdf(pdf, tiffFilename);
+			addTiffImageToPdf_iCafe(pdf, tiffFilename);
 		}
 		// close pdf document
 		pdf.close();
 
 	}
 
-	void addTiffImageToPdf(Document pdf, String tiffFilename) throws Exception
+	void addTiffImageToPdf_iCafe(Document pdf, String tiffFilename) throws Exception
 	{
-		RandomAccessFileOrArray file = new RandomAccessFileOrArray(tiffFilename);
-		int pages = TiffImage.getNumberOfPages(file);
-		
-		Iterator<ImageReader> readers = javax.imageio.ImageIO.getImageReadersBySuffix("tiff");
-
-		ImageReader _imageReader = (ImageReader) (readers.next());
-		if (_imageReader != null)
+		ImageInputStream is = javax.imageio.ImageIO.createImageInputStream(new File(tiffFilename));
+		if (is == null || is.length() == 0)
 		{
-			File orgFile = new File(tiffFilename);
+			// handle error
+		}
+		Iterator<javax.imageio.ImageReader> iterator = javax.imageio.ImageIO.getImageReaders(is);
+		if (iterator == null || !iterator.hasNext())
+		{
+			throw new IOException("Image file format not supported by ImageIO: " + tiffFilename);
+		}
+		// We are just looking for the first reader compatible:
+		ImageReader reader = (ImageReader) iterator.next();
+		iterator = null;
+		reader.setInput(is);
+		int nbPages = reader.getNumImages(true);
 
-			ImageInputStream iis = javax.imageio.ImageIO.createImageInputStream(orgFile);
-			_imageReader.setInput(iis, true);
+		for (int i = 0; i < nbPages; i++)
+		{
+			BufferedImage img = reader.read(i);
 
-			for (int page = 0; page < pages; page++)
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+			javax.imageio.ImageIO.write(img, "jpg", baos);
+
+			baos.flush();
+			// Convert byteArrayoutputSteam to ByteArray
+			byte[] imageInByte = baos.toByteArray();
+
+			Image imgToSave = Image.getInstance(imageInByte);
+			float w = imgToSave.getWidth();
+			float h = imgToSave.getHeight();
+			// convert horizontal image to vertical
+			if (w > h)
 			{
-				// change tiff to jpeg
-				BufferedImage bufferedImage = _imageReader.read(page);
-				BufferedImage img2 = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-				// Set the RGB values for converted image (jpg)
-				for (int y = 0; y < bufferedImage.getHeight(); y++)
-				{
-					for (int x = 0; x < bufferedImage.getWidth(); x++)
-					{
-						img2.setRGB(x, y, bufferedImage.getRGB(x, y));
-					}
-				}
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				javax.imageio.ImageIO.write(img2, "jpg", baos);
-				baos.flush();
-				// Convert byteArrayoutputSteam to ByteArray
-				byte[] imageInByte = baos.toByteArray();
-
-				Image imgToSave = Image.getInstance(imageInByte);
-				float w = imgToSave.getWidth();
-				float h = imgToSave.getHeight();
-				// convert horizontal image to vertical
-				if (w > h)
-				{
-					imgToSave.setRotationDegrees(90);
-				}
-
-				imgToSave.scaleToFit(PageSize.A4.getWidth(), PageSize.A4.getHeight());
-				pdf.add(imgToSave);
-				baos.close();
+				imgToSave.setRotationDegrees(90);
 			}
 
+			imgToSave.scaleToFit(PageSize.A4.getWidth(), PageSize.A4.getHeight());
+			pdf.add(imgToSave);
+			baos.close();
 		}
+
 	}
 
 }
