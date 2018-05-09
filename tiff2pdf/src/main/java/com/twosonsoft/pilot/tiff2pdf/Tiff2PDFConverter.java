@@ -76,7 +76,7 @@ public class Tiff2PDFConverter
 		// open pdf document
 		pdf.open();
 		// add tiff file to pdf document
-		addTiffImageToPdf_iCafe(pdf, tiffFilename);
+		addTiffImageToPdf(pdf, tiffFilename);
 		// close pdf document
 		pdf.close();
 
@@ -95,14 +95,14 @@ public class Tiff2PDFConverter
 		for (String tiffFilename : files)
 		{
 			// add tiff file to pdf document
-			addTiffImageToPdf_iCafe(pdf, tiffFilename);
+			addTiffImageToPdf(pdf, tiffFilename);
 		}
 		// close pdf document
 		pdf.close();
 
 	}
 
-	void addTiffImageToPdf_iCafe(Document pdf, String tiffFilename) throws Exception
+	void addTiffImageToPdf(Document pdf, String tiffFilename) throws Exception
 	{
 		ImageInputStream is = javax.imageio.ImageIO.createImageInputStream(new File(tiffFilename));
 		if (is == null || is.length() == 0)
