@@ -1,13 +1,19 @@
 package com.twosonsoft.opensource.comp;
 // SqlSesssionFactoryBean을 상속 받는다
+
 // 스프링 컨텍스를 접근하기 위해 ApplicationContextAware을 구현한다
 // 객체 생성 완료후 객체 프로퍼티의 설정값을 가져 오도록 한다
 // xml이 존재하는 루트 디렉토리를 감시하는 Thread를 만들고 실행한다
 // 객체소멸 시점시 디렉토리 감시 Thread를 종료하기 위해 DisposableBean 을 구현한다
 
 import java.io.File;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.sql.DataSource;
 
@@ -31,6 +37,8 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 {
 	private static final Logger logger = LoggerFactory.getLogger(ReloadableSqlMapper.class);
 
+	SqlSessionFactory proxy;
+
 	ApplicationContext context;
 	// 스프링빈의 생성 팩토리에 접근하기 위한 빈팩토리
 	@Autowired
@@ -45,6 +53,10 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 	String beanName = "sqlFactory";
 	// 빈 라이프 사이클 플레그
 	boolean isAlive = true;
+	// process Lock vars
+	private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+	private final Lock r = rwl.readLock();
+	private final Lock w = rwl.writeLock();
 
 	public String getBeanName()
 	{
@@ -56,7 +68,6 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 		this.beanName = beanName;
 	}
 
-	
 	@Override
 	public void setDataSource(DataSource dataSource)
 	{
@@ -67,7 +78,16 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException
 	{
 		this.context = applicationContext;
+		this.setCache(null);
 	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception
+	{
+		super.afterPropertiesSet();
+		refreshProxy();
+	}
+
 	// 디렉토리 변화가 감지되면 맵퍼를 재설정한다
 	@Override
 	public void nofitfyPathChange(String mapperPath, String targetFilename)
@@ -75,15 +95,19 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 		logger.info(targetFilename + " 변화 감지");
 		try
 		{
+			w.lock();
 			logger.info("SqlMapper 재설정");
 			refresh();
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		finally {
+			w.unlock();
+		}
 	}
+
 	// 객체가 소멸될때 디렉토리 감시 객체도 중단 시킨다
 	@Override
 	public void destroy() throws Exception
@@ -93,20 +117,18 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 		{
 			logger.info("디렉토리 감시 쓰레드 종료");
 			pathWatcher.closeWatcher();
-		}		
+		}
 	}
 
 	// 객체 생성이 요청되었을때 mapper location pattern 을 추출한다
 	@Override
 	public SqlSessionFactory getObject() throws Exception
 	{
-		logger.debug("getObject... ");
-		
+		System.out.println("getObject... ");
 		extractProperty();
-
-		return super.getObject();
+		return this.proxy;
 	}
-	
+
 	// mapper location 에 Resource 가 전달 되었을 때 디렉토리 감시 시스템을 동작 시킨다
 	@Override
 	public void setMapperLocations(Resource[] mapperLocations)
@@ -135,10 +157,10 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}
 	}
+
 	// ////////////////////////////////////////////////////////////////////////////////////
 	// 공통 패스 추출 알고리즘
 	String getSuffixAutomaton(Resource[] mapperLocations) throws Exception
@@ -173,9 +195,10 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 		logger.info("SqlSession xml 맵퍼 루트 디렉토리  = " + commonStr);
 		return commonStr;
 	}
+
 	public void extractProperty()
 	{
-		if(this.mapperLocationsPattern != null )
+		if (this.mapperLocationsPattern != null)
 		{
 			return;
 		}
@@ -200,12 +223,46 @@ public class ReloadableSqlMapper extends SqlSessionFactoryBean implements Applic
 			}
 		}
 	}
+
 	// 테스트용 외부 인터페이스
 	public void refresh() throws Exception
 	{
 		Resource[] resources = context.getResources(mapperLocationsPattern);
 
 		setMapperLocations(resources);
-		this.afterPropertiesSet();
+		super.afterPropertiesSet();
+	}
+
+	public void refreshProxy()
+	{
+		proxy = (SqlSessionFactory) Proxy.newProxyInstance(
+
+				SqlSessionFactory.class.getClassLoader(),
+
+				new Class[] { SqlSessionFactory.class },
+
+				new InvocationHandler()
+				{
+					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+					{
+						// log.debug("method.getName() : " + method.getName());
+						return method.invoke(getParentObject(), args);
+					}
+				});
+	}
+
+	private Object getParentObject() throws Exception
+	{
+		r.lock();
+
+		try
+		{
+			return super.getObject();
+
+		}
+		finally
+		{
+			r.unlock();
+		}
 	}
 }
